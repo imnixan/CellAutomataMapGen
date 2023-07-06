@@ -252,7 +252,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   square: {fileID: 7482667652216324306, guid: 7d179cb777f62124db90a119756886c7, type: 3}
-  DrawLandRepeats: 1
+  DrawLandRepeats: 3
   Seed: 1337
   _width: 100
   _height: 100
+  ForestPercentChanse: 50

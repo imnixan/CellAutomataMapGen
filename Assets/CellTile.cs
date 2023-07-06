@@ -17,15 +17,12 @@ public class CellTile : Tile
         }
         set
         {
-            if (_tileType != value)
-            {
-                _tileType = value;
-                ChangeTileType();
-            }
+
+            _tileType = value;
         }
     }
 
-    private void ChangeTileType()
+    public void UpdateCell()
     {
         switch (TileType)
         {

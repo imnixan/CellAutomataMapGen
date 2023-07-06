@@ -28,13 +28,15 @@ public class GameField : MonoBehaviour
     }
     private CellTile[,] gameFieldCells;
     private Tilemap tileMap;
+    private Vector2Int gameFieldSize;
+    private Vector2Int currentTileCoordinates;
+    public int ForestPercentChanse;
 
     private void CreateMap()
     {
         CreateTileMap();
-        FillCells();
+        CreateStartChaos();
         StartCoroutine(GenerateMap());
-        // DrawMap();
     }
 
     private void CreateTileMap()
@@ -44,12 +46,13 @@ public class GameField : MonoBehaviour
             Destroy(child.gameObject);
         }
         gameFieldCells = new CellTile[Width, Height];
+        gameFieldSize = new Vector2Int(Width, Height);
         Grid grid = CreateGrid(transform);
         tileMap = CreateTilemap(grid.transform, "TileMap");
         tileMap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
     }
 
-    private void FillCells()
+    private void CreateStartChaos()
     {
         System.Random randomGenerator = new System.Random(Seed);
 
@@ -59,8 +62,8 @@ public class GameField : MonoBehaviour
             {
                 CellTile groundTile = ScriptableObject.CreateInstance<CellTile>();
                 groundTile.sprite = Resources.Load<Sprite>(ResourcesAdressBook.FieldTile);
-                int randomTile = randomGenerator.Next(0, 2);
-                if (randomTile > 0)
+                int randomTile = randomGenerator.Next(0, 100);
+                if (randomTile < ForestPercentChanse)
                 {
                     groundTile.TileType = TileTypes.Types.Forest;
                     groundTile.color = Color.green;
@@ -74,17 +77,31 @@ public class GameField : MonoBehaviour
                 tileMap.SetColliderType(new Vector3Int(x, y, 0), Tile.ColliderType.None);
             }
         }
+        FillCells();
     }
 
     IEnumerator GenerateMap()
     {
+        float startTime = Time.time;
         for (int i = 0; i < DrawLandRepeats; i++)
         {
             GenerateTiles(new LandDrawer());
+            FillCells();
             yield return null;
         }
-        Debug.Log("FinishGenerating");
+        Debug.Log($"FinishGenerating, tooks {Time.time - startTime} secs");
         DrawMap();
+    }
+
+    public void FillCells()
+    {
+        for (int x = 0; x < Width; x++)
+        {
+            for (int y = 0; y < Height; y++)
+            {
+                gameFieldCells[x, y].UpdateCell();
+            }
+        }
     }
 
     private void DrawMap()
@@ -107,7 +124,13 @@ public class GameField : MonoBehaviour
         {
             for (int y = 0; y < Height; y++)
             {
-                gameFieldCells[x, y].TileType = drawer.GetTileType(x, y, gameFieldCells);
+                currentTileCoordinates.x = x;
+                currentTileCoordinates.y = y;
+                gameFieldCells[x, y].TileType = drawer.GetTileType(
+                    currentTileCoordinates,
+                    gameFieldSize,
+                    gameFieldCells
+                );
             }
         }
     }

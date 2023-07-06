@@ -7,36 +7,41 @@ public class LandDrawer : LayDrawer
         LayerId = 0;
     }
 
-    public override TileTypes.Types GetTileType(int x, int y, CellTile[,] gameFieldCells)
+    public override TileTypes.Types GetTileType(
+        Vector2Int coords,
+        Vector2Int fieldSize,
+        CellTile[,] gameFieldCells
+    )
     {
         int fieldNeighbors = 0;
-        int xMod = 0;
-        int yMod = 0;
-        for (int i = -1; i < 2; i++)
+        for (int xMod = -1; xMod < 2; xMod++)
         {
-            for (int j = -1; j < 2; j++)
+            for (int yMod = -1; yMod < 2; yMod++)
             {
-                if (j == 0 && i == 0)
+                if (yMod == 0 && xMod == 0)
                 {
                     continue;
                 }
 
-                if (gameFieldCells[x + xMod, y + yMod].TileType == TileTypes.Types.Field)
+                if (
+                    gameFieldCells[
+                        Normalize(coords.x + xMod, fieldSize.x),
+                        Normalize(coords.y + yMod, fieldSize.y)
+                    ].TileType == TileTypes.Types.Field
+                )
                 {
                     fieldNeighbors++;
                 }
             }
         }
-        if (gameFieldCells[x, y].TileType == TileTypes.Types.Forest)
+        if (gameFieldCells[coords.x, coords.y].TileType == TileTypes.Types.Forest)
         {
             if ((Masks.GetLandsMask() & (1 << fieldNeighbors)) != 0)
             {
-                Debug.Log("Forest = > Field");
                 return TileTypes.Types.Field;
             }
             else
             {
-                Debug.Log("Forest = Forest");
                 return TileTypes.Types.Forest;
             }
         }
@@ -44,14 +49,25 @@ public class LandDrawer : LayDrawer
         {
             if ((Masks.GetLandsMask() & (1 << (8 - fieldNeighbors))) != 0)
             {
-                Debug.Log("Fieldt = > Forest");
                 return TileTypes.Types.Forest;
             }
             else
             {
-                Debug.Log("Field = field");
                 return TileTypes.Types.Field;
             }
         }
+    }
+
+    private int Normalize(int coordinate, int coordinateMax)
+    {
+        if (coordinate == coordinateMax)
+        {
+            coordinate = 0;
+        }
+        if (coordinate < 0)
+        {
+            coordinate = coordinateMax - 1;
+        }
+        return coordinate;
     }
 }
