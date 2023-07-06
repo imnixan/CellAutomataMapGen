@@ -5,60 +5,75 @@ using UnityEngine.Tilemaps;
 
 public class GameField : MonoBehaviour
 {
-    public Sprite square;
-
-    [SerializeField]
-    private int DrawLandRepeats = 200;
+    private const int DrawLandRepeats = 1;
+    private const int ForestPercentChanse = 50;
 
     [SerializeField]
     private int Seed = 1337;
 
     [SerializeField]
-    private int _width,
-        _height;
+    private int _startWidth,
+        _startHeight,
+        _extraHeight;
 
-    public int Width
-    {
-        get { return _width; }
-    }
+    private int width;
+    private int height;
+    private int startDrawHeight;
 
-    public int Height
-    {
-        get { return _height; }
-    }
     private CellTile[,] gameFieldCells;
     private Tilemap tileMap;
     private Vector2Int gameFieldSize;
     private Vector2Int currentTileCoordinates;
-    public int ForestPercentChanse;
+    private bool extraGenerate;
+    private int StartWidth
+    {
+        get { return _startWidth; }
+    }
+    private int StartHeight
+    {
+        get { return _startHeight; }
+    }
+    private int ExtraHeight
+    {
+        get { return _extraHeight; }
+    }
+
+    private void Start()
+    {
+        width = StartWidth;
+        height = StartHeight;
+        CreateGrid();
+        CreateMap();
+    }
+
+    private void CreateGrid()
+    {
+        Grid grid = CreateGrid(transform);
+        tileMap = GetTilemap(grid.transform, "TileMap");
+        tileMap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
+    }
 
     private void CreateMap()
     {
-        CreateTileMap();
-        CreateStartChaos();
+        CreateGameField();
         StartCoroutine(GenerateMap());
     }
 
-    private void CreateTileMap()
+    private void CreateGameField()
     {
-        foreach (Transform child in transform)
-        {
-            Destroy(child.gameObject);
-        }
-        gameFieldCells = new CellTile[Width, Height];
-        gameFieldSize = new Vector2Int(Width, Height);
-        Grid grid = CreateGrid(transform);
-        tileMap = CreateTilemap(grid.transform, "TileMap");
-        tileMap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
+        gameFieldCells = new CellTile[width, height];
+        gameFieldSize = new Vector2Int(width, height);
+
+        CreateStartChaos();
     }
 
     private void CreateStartChaos()
     {
         System.Random randomGenerator = new System.Random(Seed);
 
-        for (int y = 0; y < Height; y++)
+        for (int y = 0; y < height; y++)
         {
-            for (int x = 0; x < Width; x++)
+            for (int x = 0; x < width; x++)
             {
                 CellTile groundTile = ScriptableObject.CreateInstance<CellTile>();
                 groundTile.sprite = Resources.Load<Sprite>(ResourcesAdressBook.FieldTile);
@@ -66,18 +81,27 @@ public class GameField : MonoBehaviour
                 if (randomTile < ForestPercentChanse)
                 {
                     groundTile.TileType = TileTypes.Types.Forest;
-                    groundTile.color = Color.green;
                 }
                 else
                 {
                     groundTile.TileType = TileTypes.Types.Field;
-                    groundTile.color = Color.yellow;
                 }
                 gameFieldCells[x, y] = groundTile;
                 tileMap.SetColliderType(new Vector3Int(x, y, 0), Tile.ColliderType.None);
             }
         }
         FillCells();
+    }
+
+    private void FillCells()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                gameFieldCells[x, y].UpdateCell();
+            }
+        }
     }
 
     IEnumerator GenerateMap()
@@ -93,36 +117,28 @@ public class GameField : MonoBehaviour
         DrawMap();
     }
 
-    public void FillCells()
-    {
-        for (int x = 0; x < Width; x++)
-        {
-            for (int y = 0; y < Height; y++)
-            {
-                gameFieldCells[x, y].UpdateCell();
-            }
-        }
-    }
-
     private void DrawMap()
     {
-        for (int x = 0; x < Width; x++)
+        for (int x = 0; x < width; x++)
         {
-            for (int y = 0; y < Height; y++)
+            for (int y = 0; y < height; y++)
             {
-                tileMap.SetTile(new Vector3Int(x, y, 0), gameFieldCells[x, y]);
+                tileMap.SetTile(new Vector3Int(x, y + startDrawHeight, 0), gameFieldCells[x, y]);
             }
         }
         Debug.Log("finishDraw");
+        if (!extraGenerate)
+        {
+            startDrawHeight += ExtraHeight;
+            extraGenerate = true;
+        }
     }
-
-    private void UpdateCells() { }
 
     private void GenerateTiles(LayDrawer drawer)
     {
-        for (int x = 0; x < Width; x++)
+        for (int x = 0; x < width; x++)
         {
-            for (int y = 0; y < Height; y++)
+            for (int y = 0; y < height; y++)
             {
                 currentTileCoordinates.x = x;
                 currentTileCoordinates.y = y;
@@ -144,21 +160,30 @@ public class GameField : MonoBehaviour
         return grid;
     }
 
-    private Tilemap CreateTilemap(Transform parent, string name)
+    private Tilemap GetTilemap(Transform parent, string name)
     {
         GameObject gameObject = new GameObject(name);
         gameObject.transform.parent = parent;
-        gameObject.transform.localPosition = new Vector2(Width / 2, Height / 2) * -1;
+        gameObject.transform.localPosition = new Vector2(width / 2, height / 2) * -1;
         TilemapRenderer tilemapRenderer = gameObject.AddComponent<TilemapRenderer>();
         Tilemap tilemap = gameObject.GetComponent<Tilemap>();
-
-        tilemap.tileAnchor = new Vector3();
 
         return tilemap;
     }
 
-    private void Start()
+    private void AddExtraHeight()
     {
+        startDrawHeight += ExtraHeight;
+        height = ExtraHeight;
         CreateMap();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            AddExtraHeight();
+            Seed++;
+        }
     }
 }

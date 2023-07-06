@@ -13,7 +13,7 @@ public class LandDrawer : LayDrawer
         CellTile[,] gameFieldCells
     )
     {
-        int fieldNeighbors = 0;
+        int forestNeighbors = 0;
         for (int xMod = -1; xMod < 2; xMod++)
         {
             for (int yMod = -1; yMod < 2; yMod++)
@@ -23,31 +23,33 @@ public class LandDrawer : LayDrawer
                     continue;
                 }
 
+                int newX = xMod + coords.x;
+                int newY = yMod + coords.y;
                 if (
                     gameFieldCells[
-                        Normalize(coords.x + xMod, fieldSize.x),
-                        Normalize(coords.y + yMod, fieldSize.y)
-                    ].TileType == TileTypes.Types.Field
+                        Normalize(newX, fieldSize.x),
+                        Normalize(newY, fieldSize.y)
+                    ].TileType == TileTypes.Types.Forest
                 )
                 {
-                    fieldNeighbors++;
+                    forestNeighbors++;
                 }
             }
         }
         if (gameFieldCells[coords.x, coords.y].TileType == TileTypes.Types.Forest)
         {
-            if ((Masks.GetLandsMask() & (1 << fieldNeighbors)) != 0)
+            if (forestNeighbors >= 5)
             {
-                return TileTypes.Types.Field;
+                return TileTypes.Types.Forest;
             }
             else
             {
-                return TileTypes.Types.Forest;
+                return TileTypes.Types.Field;
             }
         }
         else
         {
-            if ((Masks.GetLandsMask() & (1 << (8 - fieldNeighbors))) != 0)
+            if (forestNeighbors >= 4)
             {
                 return TileTypes.Types.Forest;
             }
