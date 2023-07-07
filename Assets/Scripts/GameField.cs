@@ -9,7 +9,7 @@ public class GameField : MonoBehaviour
 {
     private EnemySpawner enemySpawner;
     private FlightForward player;
-    private const int DrawLandRepeats = 50;
+    private int DrawLandRepeats;
     private const int ForestPercentChanse = 50;
     private const int TreeLevel = 2;
     private const int LandLevel = 0;
@@ -58,7 +58,8 @@ public class GameField : MonoBehaviour
         Seed = PlayerPrefs.GetInt("Seed");
         player = GameObject.FindWithTag("Player").GetComponent<FlightForward>();
         player.enabled = false;
-
+        randomGenerator = new System.Random(Seed);
+        DrawLandRepeats = randomGenerator.Next(200, 1000);
         Masks.InitializeMasks();
         enemySpawner = GetComponent<EnemySpawner>();
         camMax = Camera.main.ViewportToWorldPoint(new Vector2(1, 1));
