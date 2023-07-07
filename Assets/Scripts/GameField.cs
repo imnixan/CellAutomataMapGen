@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UniRx;
+using System.Threading;
 
 public class GameField : MonoBehaviour
 {
@@ -105,7 +107,7 @@ public class GameField : MonoBehaviour
     {
         startTime = Time.time;
         CreateGameField();
-        StartCoroutine(GenerateMap());
+        // GenerateMap();
     }
 
     private void CreateGameField()
@@ -113,10 +115,10 @@ public class GameField : MonoBehaviour
         lastGameFieldCells = gameFieldCells;
         gameFieldCells = new CellTile[width, height];
 
-        CreateStartChaos();
+        StartCoroutine(CreateStartChaos());
     }
 
-    private void CreateStartChaos()
+    private IEnumerator CreateStartChaos()
     {
         randomGenerator = new System.Random(Seed);
 
@@ -137,7 +139,9 @@ public class GameField : MonoBehaviour
                 gameFieldCells[x, y] = groundTile;
                 landTileMap.SetColliderType(new Vector3Int(x, y, 0), Tile.ColliderType.None);
             }
+            yield return null;
         }
+        GenerateMap();
     }
 
     private void FillCells()
@@ -151,16 +155,24 @@ public class GameField : MonoBehaviour
         }
     }
 
-    private IEnumerator GenerateMap()
+    private void GenerateMap()
+    {
+        Observable
+            .Start(() => GenerateMapOnOtherThread())
+            .SubscribeOn(Scheduler.ThreadPool) // Указываем использование пула потоков для выполнения метода
+            .ObserveOn(Scheduler.MainThread) // Указываем переключение на основной поток после выполнения метода
+            .Subscribe(result =>
+            {
+                StartCoroutine(DrawMap());
+            });
+    }
+
+    private void GenerateMapOnOtherThread()
     {
         for (int i = 0; i < DrawLandRepeats; i++)
         {
             GenerateTiles(new LandDrawer());
-            FillCells();
-            yield return null;
         }
-
-        StartCoroutine(DrawMap());
     }
 
     private IEnumerator DrawMap()
@@ -169,6 +181,7 @@ public class GameField : MonoBehaviour
         {
             for (int y = 0; y < height; y++)
             {
+                gameFieldCells[x, y].UpdateCell(x, y + heightAdjustment);
                 landTileMap.SetTile(
                     new Vector3Int(x, y + heightAdjustment, 0),
                     gameFieldCells[x, y]
@@ -242,6 +255,7 @@ public class GameField : MonoBehaviour
 
     private void GenerateTiles(LayDrawer drawer)
     {
+        Debug.Log($"Gen Tiles in thread {Thread.CurrentThread.ManagedThreadId}");
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
