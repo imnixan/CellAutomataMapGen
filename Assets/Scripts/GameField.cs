@@ -9,14 +9,13 @@ public class GameField : MonoBehaviour
 {
     private EnemySpawner enemySpawner;
     private FlightForward player;
-    private const int DrawLandRepeats = 1;
+    private const int DrawLandRepeats = 50;
     private const int ForestPercentChanse = 50;
     private const int TreeLevel = 2;
     private const int LandLevel = 0;
     private const int EnemiesLevel = 1;
 
-    [SerializeField]
-    private int Seed = 1337;
+    private int Seed;
 
     [SerializeField]
     private int _startWidth,
@@ -52,12 +51,14 @@ public class GameField : MonoBehaviour
     private Vector3 camMin;
     private System.Random randomGenerator;
     private float startTime;
+    public Material mat;
 
     private void Start()
     {
+        Seed = PlayerPrefs.GetInt("Seed");
         player = GameObject.FindWithTag("Player").GetComponent<FlightForward>();
         player.enabled = false;
-        Application.targetFrameRate = 300;
+
         Masks.InitializeMasks();
         enemySpawner = GetComponent<EnemySpawner>();
         camMax = Camera.main.ViewportToWorldPoint(new Vector2(1, 1));
@@ -100,6 +101,7 @@ public class GameField : MonoBehaviour
         TilemapRenderer tilemapRenderer = gameObject.AddComponent<TilemapRenderer>();
         Tilemap tileMap = gameObject.GetComponent<Tilemap>();
         tilemapRenderer.sortingOrder = layer;
+        tilemapRenderer.material = mat;
         return tileMap;
     }
 
@@ -107,7 +109,6 @@ public class GameField : MonoBehaviour
     {
         startTime = Time.time;
         CreateGameField();
-        // GenerateMap();
     }
 
     private void CreateGameField()
@@ -131,15 +132,17 @@ public class GameField : MonoBehaviour
                 if (randomTile < ForestPercentChanse)
                 {
                     groundTile.TileType = TileTypes.Types.Forest;
+                    groundTile.OldType = TileTypes.Types.Forest;
                 }
                 else
                 {
                     groundTile.TileType = TileTypes.Types.Field;
+                    groundTile.OldType = TileTypes.Types.Field;
                 }
                 gameFieldCells[x, y] = groundTile;
                 landTileMap.SetColliderType(new Vector3Int(x, y, 0), Tile.ColliderType.None);
             }
-            yield return null;
+            yield return new WaitForFixedUpdate();
         }
         GenerateMap();
     }
@@ -172,14 +175,15 @@ public class GameField : MonoBehaviour
         for (int i = 0; i < DrawLandRepeats; i++)
         {
             GenerateTiles(new LandDrawer());
+            UpdateTileType();
         }
     }
 
     private IEnumerator DrawMap()
     {
-        for (int x = 0; x < width; x++)
+        for (int y = 0; y < height; y++)
         {
-            for (int y = 0; y < height; y++)
+            for (int x = 0; x < width; x++)
             {
                 gameFieldCells[x, y].UpdateCell(x, y + heightAdjustment);
                 landTileMap.SetTile(
@@ -187,13 +191,14 @@ public class GameField : MonoBehaviour
                     gameFieldCells[x, y]
                 );
                 GenerateLayers(x, y);
-                yield return null;
             }
+            yield return new WaitForFixedUpdate();
         }
         if (!additionGenerate)
         {
             additionGenerate = true;
             player.enabled = true;
+            Debug.Log($"start time = {Time.time}");
         }
     }
 
@@ -238,7 +243,7 @@ public class GameField : MonoBehaviour
         if (Masks.CheckMask(result, Masks.GunPlaceMask))
         {
             enemySpawner.SpawnGun(
-                new Vector2(x, y + heightAdjustment),
+                new Vector2(x - width / 2, y + heightAdjustment - screenHeight / 2),
                 EnemiesLevel,
                 randomGenerator
             );
@@ -246,7 +251,7 @@ public class GameField : MonoBehaviour
         else
         {
             enemySpawner.TrySpawnMovable(
-                new Vector2(x, y + heightAdjustment),
+                new Vector2(x - width / 2, y + heightAdjustment - screenHeight / 2),
                 EnemiesLevel,
                 randomGenerator
             );
@@ -255,7 +260,6 @@ public class GameField : MonoBehaviour
 
     private void GenerateTiles(LayDrawer drawer)
     {
-        Debug.Log($"Gen Tiles in thread {Thread.CurrentThread.ManagedThreadId}");
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -266,6 +270,17 @@ public class GameField : MonoBehaviour
                     currentTileCoordinates,
                     gameFieldCells
                 );
+            }
+        }
+    }
+
+    private void UpdateTileType()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                gameFieldCells[x, y].OldType = gameFieldCells[x, y].TileType;
             }
         }
     }

@@ -24,7 +24,7 @@ public static class TileNeighborsChecker
                     gameFieldCells[
                         CoordsNormalizer.Normalize(newX, gameFieldCells.GetLength(0)),
                         CoordsNormalizer.Normalize(newY, gameFieldCells.GetLength(1))
-                    ].TileType == searchedNeighbor
+                    ].OldType == searchedNeighbor
                 )
                 {
                     sameNeighbors++;

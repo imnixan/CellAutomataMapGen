@@ -7,6 +7,7 @@ using System.Linq;
 public class CellTile : Tile
 {
     private TileTypes.Types _tileType;
+    private TileTypes.Types _oldType;
     private int _x,
         _y;
     public int X
@@ -32,6 +33,20 @@ public class CellTile : Tile
         {
 
             _tileType = value;
+        }
+    }
+
+    public TileTypes.Types OldType
+    {
+        get
+        {
+
+            return _oldType;
+        }
+        set
+        {
+
+            _oldType = value;
         }
     }
 
