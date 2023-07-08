@@ -14,6 +14,9 @@ public class CellTile : Tile
     {
         get { return _x; }
         private set { _x = value; }
+
+
+        
     }
 
     public int Y

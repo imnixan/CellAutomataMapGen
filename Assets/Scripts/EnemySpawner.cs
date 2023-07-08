@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    private const int SpawnEnemyChanse = 30;
-    private const int SpawnCarChanse = 30;
+    private const int SpawnEnemyChanse = 5;
+    private const int SpawnCarChanse = 50;
 
     [SerializeReference]
     private GameObject gunPrefab,
@@ -26,7 +26,7 @@ public class EnemySpawner : MonoBehaviour
         {
             Instantiate(currentPrefab, position, new Quaternion())
                 .GetComponent<Enemy>()
-                .Initialize(layerId);
+                .Initialize(layerId, randomGenerator);
         }
     }
 
@@ -34,11 +34,13 @@ public class EnemySpawner : MonoBehaviour
     {
         if (randomGenerator.Next(0, 100) < SpawnCarChanse)
         {
-            // Instantiate(carPrefab, position, new Quaternion()).GetComponent<Enemy>().Initialize(layerId);
+            currentPrefab = carPrefab;
+            InstanceEnemy(position, layerId, randomGenerator);
         }
         else
         {
-            // Instantiate(tankPrefab, position, new Quaternion()).GetComponent<Enemy>().Initialize(layerId);
+            currentPrefab = tankPrefab;
+            InstanceEnemy(position, layerId, randomGenerator);
         }
     }
 }

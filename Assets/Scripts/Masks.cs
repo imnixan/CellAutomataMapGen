@@ -38,7 +38,7 @@ public static class Masks
     private static int[] landSurviveMaskRules = new int[] { 5, 6, 7, 8 };
 
     private static int[] gunPlaceMaskRules = new int[] { 4, 5, 7 };
-    private static int[] movableMaskRules = new int[1];
+    private static int[] movableMaskRules = new int[]{0,1};
 
     private static int CreateAndGetMask(int[] maskRules)
     {

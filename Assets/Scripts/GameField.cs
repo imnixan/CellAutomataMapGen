@@ -1,3 +1,5 @@
+
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,12 +10,12 @@ using System.Threading;
 public class GameField : MonoBehaviour
 {
     private EnemySpawner enemySpawner;
-    private FlightForward player;
+    private Movement player;
     private int DrawLandRepeats;
     private const int ForestPercentChanse = 50;
-    private const int TreeLevel = 2;
+    private const int TreeLevel = 4;
     private const int LandLevel = 0;
-    private const int EnemiesLevel = 1;
+    private const int EnemiesLevel = 2;
 
     private int Seed;
 
@@ -56,7 +58,7 @@ public class GameField : MonoBehaviour
     private void Start()
     {
         Seed = PlayerPrefs.GetInt("Seed");
-        player = GameObject.FindWithTag("Player").GetComponent<FlightForward>();
+        player = GameObject.FindWithTag("Player").GetComponent<Movement>();
         player.enabled = false;
         randomGenerator = new System.Random(Seed);
         DrawLandRepeats = randomGenerator.Next(200, 1000);
@@ -101,6 +103,7 @@ public class GameField : MonoBehaviour
         gameObject.transform.localPosition = new Vector2(width / 2, screenHeight / 2) * -1;
         TilemapRenderer tilemapRenderer = gameObject.AddComponent<TilemapRenderer>();
         Tilemap tileMap = gameObject.GetComponent<Tilemap>();
+        tileMap.tileAnchor = new Vector3(0.5f , 0.5f, 0);
         tilemapRenderer.sortingOrder = layer;
         tilemapRenderer.material = mat;
         return tileMap;
@@ -199,7 +202,6 @@ public class GameField : MonoBehaviour
         {
             additionGenerate = true;
             player.enabled = true;
-            Debug.Log($"start time = {Time.time}");
         }
     }
 
@@ -227,6 +229,7 @@ public class GameField : MonoBehaviour
         treeObject.TileType = TileTypes.Types.Tree;
         treeObject.UpdateCell(x, y);
         treesTileMap.SetTile(new Vector3Int(x, y + heightAdjustment, 0), treeObject);
+        treesTileMap.SetColliderType(new Vector3Int(x, y, 0), Tile.ColliderType.None);
     }
 
     private void SpawnFieldLayers(int x, int y)
@@ -249,7 +252,7 @@ public class GameField : MonoBehaviour
                 randomGenerator
             );
         }
-        else
+        else if(Masks.CheckMask(result, Masks.MovablePlaceMask))
         {
             enemySpawner.TrySpawnMovable(
                 new Vector2(x - width / 2, y + heightAdjustment - screenHeight / 2),
@@ -257,6 +260,7 @@ public class GameField : MonoBehaviour
                 randomGenerator
             );
         }
+        
     }
 
     private void GenerateTiles(LayDrawer drawer)
