@@ -29,7 +29,7 @@ public class Tank : Enemy, IShooter
 
     }
 
-    private void LateUpdate(){
+    protected override void LateUpdate(){
         tower.up = player.transform.position - tower.position;
     }
 

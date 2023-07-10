@@ -2,9 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.Events;
 public class Movement : MonoBehaviour, IShooter
 {
+    public static event UnityAction PlayerShot;
     private const float Speed = 2;
     private Rigidbody2D rb;
     private ParticleSystem ps;
@@ -13,7 +14,8 @@ public class Movement : MonoBehaviour, IShooter
     private float screenHalfWidth;
     private float lefPower,
         rightPower;
-
+    
+    
     void Start()
     {
         screenHalfWidth = Camera.main.ViewportToWorldPoint(new Vector2(1, 1)).x;
@@ -61,6 +63,7 @@ public class Movement : MonoBehaviour, IShooter
 
     public void Shoot(){
         ps.Emit(1);
+        PlayerShot?.Invoke();
     }
 
      protected void OnParticleCollision(GameObject other) {

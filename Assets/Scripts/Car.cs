@@ -1,5 +1,3 @@
-
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +7,7 @@ public class Car : Enemy
 
 private bool onPlayerScreen;
 private System.Random randomGenerator;
+    private const int maxRotation = 1;
     public override void Initialize(int layerId, System.Random randomGenerator)
     {
         base.Initialize(layerId,randomGenerator);
@@ -54,6 +53,21 @@ private System.Random randomGenerator;
     private void OnCollisionEnter2D(Collision2D other){
             Destroy(gameObject);
         
+    }
+
+    private void OnEnable() {
+        Movement.PlayerShot += OnPlayerShot;
+    }
+    private void OnDisable() {
+        Movement.PlayerShot -=OnPlayerShot;
+    }
+
+    private void OnPlayerShot(){
+        if(moving && onPlayerScreen)
+        {
+            transform.up += new Vector3(randomGenerator.Next(-maxRotation,maxRotation + 1),
+         randomGenerator.Next(-maxRotation, maxRotation  + 1),0);
+        }
     }
 
    

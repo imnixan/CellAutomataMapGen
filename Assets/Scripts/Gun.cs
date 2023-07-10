@@ -13,7 +13,7 @@ public class Gun : Enemy, IShooter
         shooter = gameObject.AddComponent<Shooter>();
         gun = GetComponentInChildren<ParticleSystem>();
     }
-    private void LateUpdate()
+    protected override void LateUpdate()
     {
         transform.up = transform.position - player.transform.position;
     }
