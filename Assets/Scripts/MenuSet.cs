@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,6 +23,16 @@ public class MenuSet : MonoBehaviour
         }
         PlayerPrefs.SetInt("Seed", int.Parse(inputField.text));
         SceneManager.LoadScene("Game");
+    }
+
+    public void Settings()
+    {
+        SceneManager.LoadScene("Settings");
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
     }
 
     public void GenerateSeed()

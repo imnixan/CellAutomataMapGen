@@ -9,8 +9,8 @@ using System.Threading;
 
 public class GameField : MonoBehaviour
 {
+    [SerializeField] GameObject[] bonuses;
     private EnemySpawner enemySpawner;
-    private Movement player;
     private int DrawLandRepeats;
     private const int ForestPercentChanse = 50;
     private const int TreeLevel = 4;
@@ -58,8 +58,6 @@ public class GameField : MonoBehaviour
     private void Start()
     {
         Seed = PlayerPrefs.GetInt("Seed");
-        player = GameObject.FindWithTag("Player").GetComponent<Movement>();
-        player.enabled = false;
         randomGenerator = new System.Random(Seed);
         DrawLandRepeats = randomGenerator.Next(200, 1000);
         Masks.InitializeMasks();
@@ -201,12 +199,16 @@ public class GameField : MonoBehaviour
         if (!additionGenerate)
         {
             additionGenerate = true;
-            player.enabled = true;
+            GetComponent<GameManager>().StartGame();
         }
     }
 
     private void GenerateLayers(int x, int y)
     {
+        if(randomGenerator.Next (0, 400) <= 1)
+        {
+            Instantiate(bonuses[randomGenerator.Next(0,bonuses.Length)],  new Vector2(x - width / 2, y + heightAdjustment - screenHeight / 2), new Quaternion());
+        }
         switch (gameFieldCells[x, y].TileType)
         {
             case TileTypes.Types.Forest:

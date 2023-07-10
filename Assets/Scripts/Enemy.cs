@@ -1,18 +1,22 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Events;
 public abstract class Enemy : MonoBehaviour
 {
+    [SerializeField] protected AudioClip action;
+    protected SoundManager sm;
     protected Transform player;
     protected float minBorder;
     protected float maxBorder;
     protected float screenHeight;
-    private const float maxDif = 3;
+    protected const float maxDif = 3;
     protected Rigidbody2D rb;
     protected float Speed;
     protected bool moving;
     protected float hp;
 
+    public static event UnityAction<Enemy, Vector3, bool> EnemyDestroy;
     public virtual void Initialize(int layerId, System.Random randomGenerator)
     {
         GetComponent<SpriteRenderer>().sortingOrder = layerId;
@@ -24,6 +28,7 @@ public abstract class Enemy : MonoBehaviour
                 rb.isKinematic =true;
 
         rb.gravityScale = 0;
+        sm = GameObject.FindGameObjectWithTag("Player").GetComponent<SoundManager>();
     }
 
     protected virtual void LateUpdate()
@@ -37,12 +42,33 @@ public abstract class Enemy : MonoBehaviour
     }
 
      protected void OnParticleCollision(GameObject other) {
-        Debug.Log($"Enemy {gameObject.name} got hit from {other.name}");
+       if(DecreaseHp())
+            {
+                EnemyDestroy?.Invoke(this, transform.position, true);
+                Destroy(gameObject);
+            }
+        
+    }
+
+    protected void OnCollisionEnter2D(Collision2D other) {
+        
+            if(DecreaseHp())
+            {
+                EnemyDestroy?.Invoke(this, transform.position, false);
+                Destroy(gameObject);
+            }
+        
+    }
+
+    protected bool DecreaseHp()
+    {
         hp--;
-        if(hp <= 0)
-        {
-            Destroy(gameObject);
-        }
+        return hp <= 0;
+    }
+
+    public virtual void Shoot()
+    {
+        sm.PlaySound(action);
     }
 
    

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3355072256574318450}
   m_Layer: 7
   m_Name: Tank
-  m_TagString: Untagged
+  m_TagString: Tank
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -100,6 +100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43f208cf2a3270146a741df3e12f2f62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  action: {fileID: 8300000, guid: abb4eaa2102a312479ec56149fa32a6a, type: 3}
 --- !u!61 &3355072256574318450
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -224,7 +225,7 @@ GameObject:
   - component: {fileID: 5342285503919326793}
   m_Layer: 7
   m_Name: GunTank
-  m_TagString: Untagged
+  m_TagString: Tank
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5140,7 +5141,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.4
+      scalar: 0.8
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -5193,7 +5194,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 0.5
       minScalar: 5
       maxCurve:
         serializedVersion: 2

@@ -30,6 +30,7 @@ public class Tank : Enemy, IShooter
     }
 
     protected override void LateUpdate(){
+        base.LateUpdate();
         tower.up = player.transform.position - tower.position;
     }
 
@@ -41,8 +42,9 @@ public class Tank : Enemy, IShooter
         }
     }
 
-    public void Shoot()
+    public override void Shoot()
     {
+        base.Shoot();
        transform.up += new Vector3(randomGenerator.Next(-maxRotation,maxRotation + 1),
          randomGenerator.Next(-maxRotation, maxRotation  + 1),0);
         gun.Emit(1);
@@ -51,7 +53,7 @@ public class Tank : Enemy, IShooter
 
     private void OnBecameVisible() {
         moving = true;
-        shooter.StartShoot(1, this);
+        shooter.StartShoot(2, this);
         ps.Play();
     }
     private void OnBecameInvisible()
@@ -59,4 +61,6 @@ public class Tank : Enemy, IShooter
         shooter.StopShooting();
         ps.Stop();
     }
+
+
 }

@@ -1,3 +1,6 @@
+using System.Dynamic;
+using System.Net.Mail;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,10 +15,10 @@ private System.Random randomGenerator;
     {
         base.Initialize(layerId,randomGenerator);
         this.randomGenerator = randomGenerator;
-        Speed = 2.01f;
+        Speed = 2.1f;
         onPlayerScreen = false;
         moving = false;
-        hp =1;
+        hp = 1;
 
     }
 
@@ -50,10 +53,6 @@ private System.Random randomGenerator;
         onPlayerScreen = false;
     }
 
-    private void OnCollisionEnter2D(Collision2D other){
-            Destroy(gameObject);
-        
-    }
 
     private void OnEnable() {
         Movement.PlayerShot += OnPlayerShot;
@@ -63,12 +62,29 @@ private System.Random randomGenerator;
     }
 
     private void OnPlayerShot(){
-        if(moving && onPlayerScreen)
-        {
-            transform.up += new Vector3(randomGenerator.Next(-maxRotation,maxRotation + 1),
-         randomGenerator.Next(-maxRotation, maxRotation  + 1),0);
-        }
+        Shoot();
     }
+
+    public override void Shoot()
+    {
+        
+         if(moving && onPlayerScreen)
+        {
+            int xRot, yRot;
+            xRot = randomGenerator.Next(-maxRotation,maxRotation + 1);
+            yRot = randomGenerator.Next(-maxRotation,maxRotation + 1);
+            transform.up += new Vector3(xRot, yRot,0);
+            if(MathF.Abs(xRot) > 0 || MathF.Abs(yRot) > 0)
+            {
+                sm.PlaySound(action);
+            }
+        }
+
+    }
+
+
+
+
 
    
 

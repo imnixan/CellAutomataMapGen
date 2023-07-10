@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 100199824884356349}
   m_Layer: 7
   m_Name: Gun
-  m_TagString: Untagged
+  m_TagString: Gun
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -99,6 +99,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f66550e1ab8f26443a662d9a702efaaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  action: {fileID: 8300000, guid: dbda2a4c14a749244b7a6f915a62f465, type: 3}
 --- !u!61 &100199824884356349
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -138,7 +139,7 @@ GameObject:
   - component: {fileID: 1923661052902564139}
   m_Layer: 7
   m_Name: GunGun
-  m_TagString: Untagged
+  m_TagString: Gun
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -294,7 +295,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 10
+      scalar: 5
       minScalar: 5
       maxCurve:
         serializedVersion: 2
