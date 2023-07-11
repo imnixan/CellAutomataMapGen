@@ -1,5 +1,3 @@
-
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,7 +7,8 @@ using System.Threading;
 
 public class GameField : MonoBehaviour
 {
-    [SerializeField] GameObject[] bonuses;
+    [SerializeField]
+    GameObject[] bonuses;
     private EnemySpawner enemySpawner;
     private int DrawLandRepeats;
     private const int ForestPercentChanse = 50;
@@ -101,7 +100,7 @@ public class GameField : MonoBehaviour
         gameObject.transform.localPosition = new Vector2(width / 2, screenHeight / 2) * -1;
         TilemapRenderer tilemapRenderer = gameObject.AddComponent<TilemapRenderer>();
         Tilemap tileMap = gameObject.GetComponent<Tilemap>();
-        tileMap.tileAnchor = new Vector3(0.5f , 0.5f, 0);
+        tileMap.tileAnchor = new Vector3(0.5f, 0.5f, 0);
         tilemapRenderer.sortingOrder = layer;
         tilemapRenderer.material = mat;
         return tileMap;
@@ -205,9 +204,13 @@ public class GameField : MonoBehaviour
 
     private void GenerateLayers(int x, int y)
     {
-        if(randomGenerator.Next (0, 400) <= 1)
+        if (randomGenerator.Next(0, 400) <= 1)
         {
-            Instantiate(bonuses[randomGenerator.Next(0,bonuses.Length)],  new Vector2(x - width / 2, y + heightAdjustment - screenHeight / 2), new Quaternion());
+            Instantiate(
+                bonuses[randomGenerator.Next(0, bonuses.Length)],
+                new Vector2(x - width / 2, y + heightAdjustment - screenHeight / 2),
+                new Quaternion()
+            );
         }
         switch (gameFieldCells[x, y].TileType)
         {
@@ -254,7 +257,7 @@ public class GameField : MonoBehaviour
                 randomGenerator
             );
         }
-        else if(Masks.CheckMask(result, Masks.MovablePlaceMask))
+        else if (Masks.CheckMask(result, Masks.MovablePlaceMask))
         {
             enemySpawner.TrySpawnMovable(
                 new Vector2(x - width / 2, y + heightAdjustment - screenHeight / 2),
@@ -262,7 +265,6 @@ public class GameField : MonoBehaviour
                 randomGenerator
             );
         }
-        
     }
 
     private void GenerateTiles(LayDrawer drawer)

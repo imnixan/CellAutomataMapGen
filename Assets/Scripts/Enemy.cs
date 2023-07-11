@@ -1,10 +1,10 @@
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine.Events;
+
 public abstract class Enemy : MonoBehaviour
 {
-    [SerializeField] protected AudioClip action;
+    [SerializeField]
+    protected AudioClip action;
     protected SoundManager sm;
     protected Transform player;
     protected float minBorder;
@@ -17,15 +17,16 @@ public abstract class Enemy : MonoBehaviour
     protected float hp;
 
     public static event UnityAction<Enemy, Vector3, bool> EnemyDestroy;
+
     public virtual void Initialize(int layerId, System.Random randomGenerator)
     {
         GetComponent<SpriteRenderer>().sortingOrder = layerId;
-        screenHeight = Camera.main.ViewportToWorldPoint(new Vector2(1,1)).y *2;
+        screenHeight = Camera.main.ViewportToWorldPoint(new Vector2(1, 1)).y * 2;
         player = GameObject.FindGameObjectWithTag("Player").transform;
         hp = 1;
         rb = gameObject.AddComponent<Rigidbody2D>();
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
-                rb.isKinematic =true;
+        rb.isKinematic = true;
 
         rb.gravityScale = 0;
         sm = GameObject.FindGameObjectWithTag("Player").GetComponent<SoundManager>();
@@ -35,29 +36,28 @@ public abstract class Enemy : MonoBehaviour
     {
         minBorder = player.position.y - maxDif;
         maxBorder = player.position.y + screenHeight + maxDif;
-        if (transform.position.y < minBorder )
+        if (transform.position.y < minBorder)
         {
             Destroy(gameObject);
         }
     }
 
-     protected void OnParticleCollision(GameObject other) {
-       if(DecreaseHp())
-            {
-                EnemyDestroy?.Invoke(this, transform.position, true);
-                Destroy(gameObject);
-            }
-        
+    protected void OnParticleCollision(GameObject other)
+    {
+        if (DecreaseHp())
+        {
+            EnemyDestroy?.Invoke(this, transform.position, true);
+            Destroy(gameObject);
+        }
     }
 
-    protected void OnCollisionEnter2D(Collision2D other) {
-        
-            if(DecreaseHp())
-            {
-                EnemyDestroy?.Invoke(this, transform.position, false);
-                Destroy(gameObject);
-            }
-        
+    protected void OnCollisionEnter2D(Collision2D other)
+    {
+        if (DecreaseHp())
+        {
+            EnemyDestroy?.Invoke(this, transform.position, false);
+            Destroy(gameObject);
+        }
     }
 
     protected bool DecreaseHp()
@@ -70,6 +70,4 @@ public abstract class Enemy : MonoBehaviour
     {
         sm.PlaySound(action);
     }
-
-   
 }

@@ -1,19 +1,36 @@
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] GameObject gameCanvas, startCanvas, endCanvas;
-    [SerializeField] SpriteRenderer bg;
-    [SerializeField] Movement player;
-    [SerializeField] TextMeshProUGUI tankMission, gunMission, carMission;
-    [SerializeField] Button startButton;
-    [SerializeField] TextMeshProUGUI endText;
-    private int tanksLeft, carsLeft, gunsLeft;
+    [SerializeField]
+    GameObject gameCanvas,
+        startCanvas,
+        endCanvas;
+
+    [SerializeField]
+    SpriteRenderer bg;
+
+    [SerializeField]
+    Movement player;
+
+    [SerializeField]
+    TextMeshProUGUI tankMission,
+        gunMission,
+        carMission;
+
+    [SerializeField]
+    Button startButton;
+
+    [SerializeField]
+    TextMeshProUGUI endText;
+    private int tanksLeft,
+        carsLeft,
+        gunsLeft;
 
     private void Awake()
     {
@@ -22,8 +39,8 @@ public class GameManager : MonoBehaviour
         endCanvas.SetActive(false);
         GenerateMission();
         startButton.interactable = false;
-
     }
+
     public void StartGame()
     {
         startButton.interactable = true;
@@ -41,7 +58,7 @@ public class GameManager : MonoBehaviour
     {
         System.Random randomGenerator = new System.Random(PlayerPrefs.GetInt("Seed"));
         gunsLeft = randomGenerator.Next(1, 10);
-        tanksLeft = randomGenerator.Next(0,5);
+        tanksLeft = randomGenerator.Next(0, 5);
         carsLeft = randomGenerator.Next(0, 7);
         tankMission.text = tanksLeft.ToString();
         gunMission.text = gunsLeft.ToString();
@@ -51,27 +68,25 @@ public class GameManager : MonoBehaviour
     private void OnEnable()
     {
         Enemy.EnemyDestroy += OnEnemyDestroy;
-        Movement.PlayerDestroy +=OnPlayerDestroy;
-        
+        Movement.PlayerDestroy += OnPlayerDestroy;
     }
-    private void OnDisable() {
+
+    private void OnDisable()
+    {
         Enemy.EnemyDestroy -= OnEnemyDestroy;
-        Movement.PlayerDestroy -=OnPlayerDestroy;
-
+        Movement.PlayerDestroy -= OnPlayerDestroy;
     }
 
-
-     void OnPlayerDestroy(Vector3 pos)
-     {
+    void OnPlayerDestroy(Vector3 pos)
+    {
         EndGame(false);
-       
-     }
+    }
 
-     void OnEnemyDestroy(Enemy type, Vector3 pos, bool playerKill)
-     {
-        if(playerKill)
+    void OnEnemyDestroy(Enemy type, Vector3 pos, bool playerKill)
+    {
+        if (playerKill)
         {
-            switch(type)
+            switch (type)
             {
                 case Tank:
                     tanksLeft--;
@@ -80,37 +95,35 @@ public class GameManager : MonoBehaviour
                     carsLeft--;
                     break;
                 case Gun:
-                    gunsLeft --;
+                    gunsLeft--;
                     break;
             }
             CheckMission();
-
         }
-       
-     }
+    }
 
-     private void EndGame(bool win)
-     {
+    private void EndGame(bool win)
+    {
         gameCanvas.SetActive(false);
         endCanvas.SetActive(true);
-        endText.text = win? "Миссия выполнена!" : "Миссия провалена";
-     }
+        endText.text = win ? "Миссия выполнена!" : "Миссия провалена";
+    }
 
-     private void CheckMission()
-     {
+    private void CheckMission()
+    {
         Debug.Log($"Check Mission cars {carsLeft}, guns {gunsLeft}, tanksleft {tanksLeft}");
-        if(tanksLeft <= 0 && carsLeft <= 0 && gunsLeft <= 0)
+        if (tanksLeft <= 0 && carsLeft <= 0 && gunsLeft <= 0)
         {
             EndGame(true);
         }
-     }
+    }
 
-     private IEnumerator HideBg()
-     {
-        for(float a = 1; a >= 0; a -=0.1f)
+    private IEnumerator HideBg()
+    {
+        for (float a = 1; a >= 0; a -= 0.1f)
         {
-            bg.color = new Color(1,1,1,a);
+            bg.color = new Color(1, 1, 1, a);
             yield return new WaitForSeconds(0.05f);
         }
-     }
+    }
 }

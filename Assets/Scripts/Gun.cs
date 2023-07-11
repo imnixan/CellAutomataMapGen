@@ -1,11 +1,8 @@
-using System.Net.Mail;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Gun : Enemy, IShooter
 {
-
     private Shooter shooter;
     private ParticleSystem gun;
 
@@ -14,27 +11,26 @@ public class Gun : Enemy, IShooter
         shooter = gameObject.AddComponent<Shooter>();
         gun = GetComponentInChildren<ParticleSystem>();
     }
+
     protected override void LateUpdate()
     {
         base.LateUpdate();
         transform.up = transform.position - player.transform.position;
     }
 
-    public  override void Shoot()
+    public override void Shoot()
     {
         base.Shoot();
         gun.Emit(1);
-        
-        
     }
 
-    private void OnBecameVisible() {
+    private void OnBecameVisible()
+    {
         shooter.StartShoot(3, this);
     }
+
     private void OnBecameInvisible()
     {
         shooter.StopShooting();
     }
-
-
 }

@@ -9,9 +9,8 @@ public class SoundManager : MonoBehaviour
     private void Start()
     {
         soundlplayer = gameObject.AddComponent<AudioSource>();
-        soundlplayer.volume = PlayerPrefs.GetInt("Sound",1);
+        soundlplayer.volume = PlayerPrefs.GetInt("Sound", 1);
     }
-
 
     public void PlaySound(AudioClip sound)
     {
@@ -20,10 +19,9 @@ public class SoundManager : MonoBehaviour
 
     public void Vibrate()
     {
-        if(PlayerPrefs.GetInt("Vibro",1) == 1)
+        if (PlayerPrefs.GetInt("Vibro", 1) == 1)
         {
             Handheld.Vibrate();
         }
     }
-
 }

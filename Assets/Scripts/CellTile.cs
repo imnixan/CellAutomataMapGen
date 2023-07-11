@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using System.Linq;
 
 [CreateAssetMenu(fileName = "MapTile", menuName = "ScriptableObjects/MapTiles", order = 1)]
 public class CellTile : Tile
@@ -14,9 +12,6 @@ public class CellTile : Tile
     {
         get { return _x; }
         private set { _x = value; }
-
-
-        
     }
 
     public int Y
