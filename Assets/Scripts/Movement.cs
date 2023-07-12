@@ -1,5 +1,4 @@
 using System.Collections;
-
 using UnityEngine;
 using UnityEngine.Events;
 using TMPro;
@@ -31,7 +30,10 @@ public class Movement : MonoBehaviour
     }
     private bool alive;
 
-    private float screenHalfWidth;
+    private float potentialX;
+    private float screenBorder;
+
+    private Vector2 screenSize;
     private float lefPower,
         rightPower;
 
@@ -47,7 +49,8 @@ public class Movement : MonoBehaviour
     {
         sm = GetComponent<SoundManager>();
 
-        screenHalfWidth = Camera.main.ViewportToWorldPoint(new Vector2(1, 1)).x;
+        screenSize = Camera.main.ViewportToWorldPoint(new Vector2(1, 1));
+        Camera.main.orthographic = false;
         rb = gameObject.AddComponent<Rigidbody2D>();
         rb.gravityScale = 0;
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
@@ -91,9 +94,11 @@ public class Movement : MonoBehaviour
     {
         Direction = transform.up;
         Direction.x = lefPower + rightPower;
-        float potentialX = (Direction + (Vector2)transform.position).x;
+        potentialX = (Mathf.Abs((Direction + (Vector2)transform.position).x));
         playerAngle = rotAngle * Direction.x * -1;
-        if (Mathf.Abs(potentialX) > 15 - screenHalfWidth)
+        screenBorder = 15 - screenSize.x;
+
+        if (potentialX > screenBorder)
         {
             Direction.x = 0;
             playerAngle = 0;

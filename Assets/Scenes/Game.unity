@@ -1990,7 +1990,7 @@ GameObject:
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
   - component: {fileID: 519420033}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -2031,7 +2031,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 0
+  orthographic: 1
   orthographic size: 5
   m_Depth: -1
   m_CullingMask:
@@ -2580,9 +2580,9 @@ MonoBehaviour:
   endCanvas: {fileID: 1345161834}
   bg: {fileID: 512249417}
   player: {fileID: 1109130474}
-  tankMission: {fileID: 341603768}
-  gunMission: {fileID: 1250103312}
-  carMission: {fileID: 119160823}
+  tankMission: {fileID: 1720903513}
+  gunMission: {fileID: 1790215225}
+  carMission: {fileID: 1251304120}
   startButton: {fileID: 4082034}
   endText: {fileID: 954740774}
 --- !u!114 &1041038763
@@ -2812,6 +2812,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rocketsLeftUi: {fileID: 303514577}
   shoot: {fileID: 8300000, guid: 2999ec3d6b0dd7a4ab04c398bfbcc801, type: 3}
+  potentialX: 0
+  screenBorder: 0
+  screenSize: {x: 0, y: 0}
 --- !u!212 &1109130475
 SpriteRenderer:
   m_ObjectHideFlags: 0

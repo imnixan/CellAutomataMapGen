@@ -204,7 +204,7 @@ public class GameField : MonoBehaviour
 
     private void GenerateLayers(int x, int y)
     {
-        if (randomGenerator.Next(0, 400) <= 1)
+        if (randomGenerator.Next(0, 400) <= 1 && (x > camMax.x && x < width - camMax.x))
         {
             Instantiate(
                 bonuses[randomGenerator.Next(0, bonuses.Length)],

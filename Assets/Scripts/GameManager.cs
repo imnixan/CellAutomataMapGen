@@ -1,6 +1,5 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -19,7 +18,7 @@ public class GameManager : MonoBehaviour
     Movement player;
 
     [SerializeField]
-    TextMeshProUGUI tankMission,
+    GameObject tankMission,
         gunMission,
         carMission;
 
@@ -60,9 +59,21 @@ public class GameManager : MonoBehaviour
         gunsLeft = randomGenerator.Next(1, 10);
         tanksLeft = randomGenerator.Next(0, 5);
         carsLeft = randomGenerator.Next(0, 7);
-        tankMission.text = tanksLeft.ToString();
-        gunMission.text = gunsLeft.ToString();
-        carMission.text = carsLeft.ToString();
+        SetMission(gunMission, gunsLeft);
+        SetMission(tankMission, tanksLeft);
+        SetMission(carMission, carsLeft);
+    }
+
+    private void SetMission(GameObject missonType, int count)
+    {
+        if (count > 0)
+        {
+            missonType.GetComponentInChildren<TextMeshProUGUI>().text = count.ToString();
+        }
+        else
+        {
+            missonType.SetActive(false);
+        }
     }
 
     private void OnEnable()
@@ -120,10 +131,11 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator HideBg()
     {
-        for (float a = 1; a >= 0; a -= 0.1f)
+        for (float a = 1; a > 0; a -= 0.1f)
         {
             bg.color = new Color(1, 1, 1, a);
             yield return new WaitForSeconds(0.05f);
         }
+        bg.color = new Color(1, 1, 1, 0);
     }
 }
