@@ -163,8 +163,8 @@ public class GameField : MonoBehaviour
     {
         Observable
             .Start(() => GenerateMapOnOtherThread())
-            .SubscribeOn(Scheduler.ThreadPool) 
-            .ObserveOn(Scheduler.MainThread) 
+            .SubscribeOn(Scheduler.ThreadPool)
+            .ObserveOn(Scheduler.MainThread)
             .Subscribe(result =>
             {
                 StartCoroutine(DrawMap());
@@ -213,15 +213,16 @@ public class GameField : MonoBehaviour
             );
         }
         CellTile tileCell = gameFieldCells[x, y];
-        int oppositeNeighborsWeight = 0;
+        NeighborsInfo neighborsInfo = TileNeighborsChecker.GetNeighborsInfo(
+            TileTypes.Types.Field,
+            tileCell.Coords,
+            gameFieldCells
+        );
         switch (tileCell.TileType)
         {
             case TileTypes.Types.Forest:
                 //SpawnForestLayers(x, y);
-                oppositeNeighborsWeight = TileNeighborsChecker.GetOppositeNeighborsWeight(TileTypes.Types.Field,
-                   tileCell.Coords,
-                   gameFieldCells);
-                tileCell.sprite = SpriteManager.GetForestSprite(oppositeNeighborsWeight);
+                tileCell.sprite = SpriteManager.GetForestSprite(neighborsInfo);
                 break;
             case TileTypes.Types.Field:
                 //SpawnFieldLayers(x, y);
@@ -251,11 +252,9 @@ public class GameField : MonoBehaviour
 
     private void SpawnFieldEnemie(int x, int y)
     {
-        int result = TileNeighborsChecker.GetNeighborsCount(
-            TileTypes.Types.Forest,
-            new Vector2Int(x, y),
-            gameFieldCells
-        );
+        int result = TileNeighborsChecker
+            .GetNeighborsInfo(TileTypes.Types.Forest, new Vector2Int(x, y), gameFieldCells)
+            .sameNeighborsCount;
         if (Masks.CheckMask(result, Masks.GunPlaceMask))
         {
             enemySpawner.SpawnGun(
@@ -296,14 +295,12 @@ public class GameField : MonoBehaviour
         switch (tileCell.TileType)
         {
             case TileTypes.Types.Forest:
-                           
+
                 break;
             case TileTypes.Types.Field:
                 tileCell.sprite = SpriteManager.GetFieldSprite();
                 break;
         }
-
-        
     }
 
     private void UpdateTileType()

@@ -9,11 +9,9 @@ public class LandDrawer : LayDrawer
 
     public override TileTypes.Types GetTileType(Vector2Int coords, CellTile[,] gameFieldCells)
     {
-        int forestNeighbors = TileNeighborsChecker.GetNeighborsCount(
-            TileTypes.Types.Forest,
-            coords,
-            gameFieldCells
-        );
+        int forestNeighbors = TileNeighborsChecker
+            .GetNeighborsInfo(TileTypes.Types.Forest, coords, gameFieldCells)
+            .sameNeighborsCount;
         if (gameFieldCells[coords.x, coords.y].TileType == TileTypes.Types.Forest)
         {
             if (Masks.CheckMask(forestNeighbors, Masks.LandSurviveMask))

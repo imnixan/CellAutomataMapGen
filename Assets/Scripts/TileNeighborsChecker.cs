@@ -1,14 +1,17 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public static class TileNeighborsChecker
 {
-    public static int GetNeighborsCount(
-        TileTypes.Types searchedNeighbor,
+    public static NeighborsInfo GetNeighborsInfo(
+        TileTypes.Types thisType,
         Vector2Int coords,
         CellTile[,] gameFieldCells
     )
     {
-        int sameNeighbors = 0;
+        int sameNeighborsCount = 0;
+        List<int> oppositeNeighborsWeights = new List<int>();
+        int neighBorWeight = 1;
         for (int xMod = -1; xMod < 2; xMod++)
         {
             for (int yMod = -1; yMod < 2; yMod++)
@@ -24,47 +27,18 @@ public static class TileNeighborsChecker
                     gameFieldCells[
                         CoordsNormalizer.Normalize(newX, gameFieldCells.GetLength(0)),
                         CoordsNormalizer.Normalize(newY, gameFieldCells.GetLength(1))
-                    ].OldType == searchedNeighbor
+                    ].OldType == thisType
                 )
                 {
-                    sameNeighbors++;
+                    sameNeighborsCount++;
+                }
+                else
+                {
+                    oppositeNeighborsWeights.Add(neighBorWeight);
+                    neighBorWeight *= 2;
                 }
             }
         }
-        return sameNeighbors;
-    }
-
-    public static int GetOppositeNeighborsWeight(
-        TileTypes.Types oppositeNeighbor,
-        Vector2Int coords,
-        CellTile[,] gameFieldCells
-    )
-    {
-        int oppositeNeughborsWeight = 0;
-        int weight = 1;
-        for (int xMod = -1; xMod < 2; xMod++)
-        {
-            for (int yMod = -1; yMod < 2; yMod++)
-            {
-                if (yMod == 0 && xMod == 0)
-                {
-                    continue;
-                }
-
-                int newX = xMod + coords.x;
-                int newY = yMod + coords.y;
-                if (
-                    gameFieldCells[
-                        CoordsNormalizer.Normalize(newX, gameFieldCells.GetLength(0)),
-                        CoordsNormalizer.Normalize(newY, gameFieldCells.GetLength(1))
-                    ].OldType == oppositeNeighbor
-                )
-                {
-                    oppositeNeughborsWeight+=weight;
-                    weight *= 2;
-                }
-            }
-        }
-        return oppositeNeughborsWeight;
+        return new NeighborsInfo(sameNeighborsCount, oppositeNeighborsWeights);
     }
 }
