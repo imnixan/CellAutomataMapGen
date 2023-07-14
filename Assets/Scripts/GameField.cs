@@ -154,7 +154,7 @@ public class GameField : MonoBehaviour
         {
             for (int y = 0; y < height; y++)
             {
-                gameFieldCells[x, y].UpdateCell(x, y + heightAdjustment);
+                gameFieldCells[x, y].UpdateCellCoords(x, y + heightAdjustment);
             }
         }
     }
@@ -163,8 +163,8 @@ public class GameField : MonoBehaviour
     {
         Observable
             .Start(() => GenerateMapOnOtherThread())
-            .SubscribeOn(Scheduler.ThreadPool) // Указываем использование пула потоков для выполнения метода
-            .ObserveOn(Scheduler.MainThread) // Указываем переключение на основной поток после выполнения метода
+            .SubscribeOn(Scheduler.ThreadPool) 
+            .ObserveOn(Scheduler.MainThread) 
             .Subscribe(result =>
             {
                 StartCoroutine(DrawMap());
@@ -175,7 +175,7 @@ public class GameField : MonoBehaviour
     {
         for (int i = 0; i < DrawLandRepeats; i++)
         {
-            GenerateTiles(new LandDrawer());
+            GenerateTilesLayers(new LandDrawer());
             UpdateTileType();
         }
     }
@@ -186,12 +186,12 @@ public class GameField : MonoBehaviour
         {
             for (int x = 0; x < width; x++)
             {
-                gameFieldCells[x, y].UpdateCell(x, y + heightAdjustment);
+                gameFieldCells[x, y].UpdateCellCoords(x, y + heightAdjustment);
+                GenerateLayers(x, y);
                 landTileMap.SetTile(
                     new Vector3Int(x, y + heightAdjustment, 0),
                     gameFieldCells[x, y]
                 );
-                GenerateLayers(x, y);
             }
             yield return new WaitForFixedUpdate();
         }
@@ -212,13 +212,20 @@ public class GameField : MonoBehaviour
                 new Quaternion()
             );
         }
-        switch (gameFieldCells[x, y].TileType)
+        CellTile tileCell = gameFieldCells[x, y];
+        int oppositeNeighborsWeight = 0;
+        switch (tileCell.TileType)
         {
             case TileTypes.Types.Forest:
-                SpawnForestLayers(x, y);
+                //SpawnForestLayers(x, y);
+                oppositeNeighborsWeight = TileNeighborsChecker.GetOppositeNeighborsWeight(TileTypes.Types.Field,
+                   tileCell.Coords,
+                   gameFieldCells);
+                tileCell.sprite = SpriteManager.GetForestSprite(oppositeNeighborsWeight);
                 break;
             case TileTypes.Types.Field:
-                SpawnFieldLayers(x, y);
+                //SpawnFieldLayers(x, y);
+                tileCell.sprite = SpriteManager.GetFieldSprite();
                 break;
         }
     }
@@ -232,7 +239,7 @@ public class GameField : MonoBehaviour
     {
         CellTile treeObject = ScriptableObject.CreateInstance<CellTile>();
         treeObject.TileType = TileTypes.Types.Tree;
-        treeObject.UpdateCell(x, y);
+        treeObject.UpdateCellCoords(x, y);
         treesTileMap.SetTile(new Vector3Int(x, y + heightAdjustment, 0), treeObject);
         treesTileMap.SetColliderType(new Vector3Int(x, y, 0), Tile.ColliderType.None);
     }
@@ -267,7 +274,7 @@ public class GameField : MonoBehaviour
         }
     }
 
-    private void GenerateTiles(LayDrawer drawer)
+    private void GenerateTilesLayers(LayDrawer drawer)
     {
         for (int x = 0; x < width; x++)
         {
@@ -281,6 +288,22 @@ public class GameField : MonoBehaviour
                 );
             }
         }
+    }
+
+    private void SetSprite(CellTile tileCell)
+    {
+        int oppositeNeighborsWeight = 0;
+        switch (tileCell.TileType)
+        {
+            case TileTypes.Types.Forest:
+                           
+                break;
+            case TileTypes.Types.Field:
+                tileCell.sprite = SpriteManager.GetFieldSprite();
+                break;
+        }
+
+        
     }
 
     private void UpdateTileType()

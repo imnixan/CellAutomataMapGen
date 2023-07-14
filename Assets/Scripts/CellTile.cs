@@ -20,6 +20,14 @@ public class CellTile : Tile
         private set { _y = value; }
     }
 
+    public Vector2Int Coords
+    {
+        get
+        {
+            return new Vector2Int(X, Y);
+        }
+    }
+
     public TileTypes.Types TileType
     {
         get
@@ -48,22 +56,9 @@ public class CellTile : Tile
         }
     }
 
-    public void UpdateCell(int xPos, int yPos)
+    public void UpdateCellCoords(int xPos, int yPos)
     {
         this.X = xPos;
         this.Y = yPos;
-        switch (TileType)
-        {
-            case TileTypes.Types.Forest:
-                this.sprite = SpriteManager.GetForestSprite();
-                break;
-            case TileTypes.Types.Tree:
-                this.sprite = SpriteManager.GetTreeSprite();
-                this.color = new Color(1, 1, 1, Random.Range(0.8f, 1));
-                break;
-            case TileTypes.Types.Field:
-                this.sprite = SpriteManager.GetFieldSprite();
-                break;
-        }
     }
 }

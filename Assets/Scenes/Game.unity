@@ -2812,9 +2812,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rocketsLeftUi: {fileID: 303514577}
   shoot: {fileID: 8300000, guid: 2999ec3d6b0dd7a4ab04c398bfbcc801, type: 3}
-  potentialX: 0
-  screenBorder: 0
-  screenSize: {x: 0, y: 0}
 --- !u!212 &1109130475
 SpriteRenderer:
   m_ObjectHideFlags: 0
